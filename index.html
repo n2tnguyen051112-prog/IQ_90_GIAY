@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Game IQ 90 Giây</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, #ff6ec7 0%, transparent 28%),
+        radial-gradient(circle at top right, #6e8bff 0%, transparent 28%),
+        linear-gradient(135deg, #17153b, #2e236c, #433d8b);
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.28);
+      padding: 22px;
+      margin-top: 18px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 26px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before, .hero::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      filter: blur(24px);
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    .hero::before {
+      background: #ff7edb;
+      top: -60px;
+      left: -40px;
+    }
+
+    .hero::after {
+      background: #67e8f9;
+      bottom: -60px;
+      right: -40px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.15;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+
+    .tagline {
+      font-size: 17px;
+      color: #f7f7ff;
+      opacity: 0.95;
+      margin-bottom: 18px;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #ffe066, #ff8c42);
+      color: #2b1144;
+      box-shadow: 0 10px 24px rgba(255, 180, 90, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      margin-top: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 150px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px 14px;
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      opacity: 0.86;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .timer.warning .stat-value {
+      color: #ffd166;
+      animation: pulse 1s infinite;
+    }
+
+    .timer.danger .stat-value {
+      color: #ff8fab;
+      animation: pulse 0.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    .progress-wrap {
+      margin-bottom: 16px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .progress {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #67e8f9, #a78bfa, #ff7edb);
+      transition: width 0.25s ease;
+    }
+
+    .question-box {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      padding: 20px;
+    }
+
+    .question-number {
+      font-size: 14px;
+      opacity: 0.84;
+      margin-bottom: 8px;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+    }
+
+    .question-text {
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      text-align: left;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .answer-btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, rgba(255,255,255,0.24), rgba(255,255,255,0.12));
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+    }
+
+    .answer-btn.selected {
+      outline: 2px solid #ffe066;
+      background: linear-gradient(135deg, rgba(255,224,102,0.28), rgba(255,255,255,0.12));
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-row .btn {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .micro-note {
+      margin-top: 12px;
+      font-size: 13px;
+      opacity: 0.82;
+      text-align: center;
+    }
+
+    .result-title {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .score-ring {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      margin: 16px auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at center, rgba(18,18,18,0.85) 52%, transparent 53%),
+        conic-gradient(#67e8f9 0deg, #a78bfa 140deg, #ff7edb 250deg, #ffd166 360deg);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.28);
+      position: relative;
+    }
+
+    .score-inner {
+      width: 126px;
+      height: 126px;
+      border-radius: 50%;
+      background: rgba(26, 19, 67, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .score-main {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .score-sub {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+
+    .result-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .result-meta .stat {
+      min-width: unset;
+    }
+
+    .comment-box {
+      background: rgba(255,255,255,0.08);
+      border-left: 5px solid #ffe066;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 17px;
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+
+    .share-box {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      text-align: center;
+    }
+
+    .share-text {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      white-space: pre-line;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      opacity: 0.76;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 28px; }
+      .question-text { font-size: 20px; }
+      .result-meta { grid-template-columns: 1fr; }
+      .nav-row .btn { min-width: 100%; }
+      .stat-value { font-size: 22px; }
+      .score-ring { width: 160px; height: 160px; }
+      .score-inner { width: 112px; height: 112px; }
+      .score-main { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- MÀN HÌNH GIỚI THIỆU -->
+    <section id="startScreen" class="card hero">
+      <div class="hero-content">
+        <h1>🧠 MINI GAME IQ 90 GIÂY</h1>
+        <div class="tagline">
+          Bạn có đủ nhanh mắt, nhanh não và đủ tỉnh táo để chinh phục 10 câu hỏi trong 90 giây không?
+        </div>
+
+        <div class="pill-row">
+          <div class="pill">⚡ 10 câu hỏi</div>
+          <div class="pill">⏱ 90 giây</div>
+          <div class="pill">🔥 Càng làm càng cuốn</div>
+        </div>
+
+        <button class="btn btn-main" onclick="startGame()">Bắt đầu thử thách</button>
+
+        <div class="micro-note">
+          Không hiện đáp án từng câu. Kết thúc sẽ chỉ công bố số câu đúng và lời nhận xét “mặn mà”.
+        </div>
+      </div>
+    </section>
+
+    <!-- MÀN HÌNH GAME -->
+    <section id="gameScreen" class="card hidden">
+      <div class="topbar">
+        <div class="stat">
+          <div class="stat-label">Câu hiện tại</div>
+          <div class="stat-value" id="questionCounter">1 / 10</div>
+        </div>
+        <div class="stat timer" id="timerBox">
+          <div class="stat-label">Thời gian còn lại</div>
+          <div class="stat-value" id="timer">90s</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Đã trả lời</div>
+          <div class="stat-value" id="answeredCount">0</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Tiến độ</span>
+          <span id="progressPercent">10%</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-number" id="questionNumberText">CÂU 1</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="answers" id="answersBox"></div>
+
+        <div class="nav-row">
+          <button class="btn btn-secondary" onclick="nextQuestion()">Bỏ qua / Câu tiếp theo</button>
+          <button class="btn btn-main" onclick="submitGame()">Nộp bài ngay</button>
+        </div>
+
+        <div class="micro-note">
+          Chọn một đáp án rồi tự động chuyển sang câu tiếp theo sau tích tắc.
+        </div>
+      </div>
+    </section>
+
+    <!-- MÀN HÌNH KẾT QUẢ -->
+    <section id="resultScreen" class="card hidden">
+      <div class="result-title">🎉 KẾT QUẢ CỦA BẠN</div>
+
+      <div class="score-ring">
+        <div class="score-inner">
+          <div class="score-main" id="scoreMain">0/10</div>
+          <div class="score-sub">Số câu đúng</div>
+        </div>
+      </div>
+
+      <div class="result-meta">
+        <div class="stat">
+          <div class="stat-label">Đúng</div>
+          <div class="stat-value" id="correctResult">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Đã trả lời</div>
+          <div class="stat-value" id="answeredResult">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Chưa trả lời</div>
+          <div class="stat-value" id="unansweredResult">0</div>
+        </div>
+      </div>
+
+      <div class="comment-box" id="commentBox"></div>
+
+      <div class="share-box">
+        <div class="share-text" id="shareText"></div>
+        <button class="btn btn-main" onclick="copyResult()">📋 Sao chép kết quả để đăng Facebook</button>
+        <button class="btn btn-secondary" onclick="restartGame()">🔄 Chơi lại</button>
+      </div>
+
+      <div class="footer-note">
+        Mini game mang tính giải trí. Ai điểm cao thì vui, ai điểm thấp thì… càng có động lực phục thù 😄
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "Số tiếp theo trong dãy là gì? 2, 4, 8, 16, ?",
+        options: ["18", "24", "32", "30"],
+        answer: 2
+      },
+      {
+        q: "Tìm số còn thiếu: 3, 6, 11, 18, 27, ?",
+        options: ["36", "38", "40", "42"],
+        answer: 1
+      },
+      {
+        q: "Nếu tất cả hoa hồng đều là hoa, kết luận nào chắc chắn đúng?",
+        options: [
+          "Hoa hồng không phải là hoa",
+          "Mọi hoa đều là hoa hồng",
+          "Hoa hồng là hoa",
+          "Không có hoa hồng nào màu đỏ"
+        ],
+        answer: 2
+      },
+      {
+        q: "Một đồng hồ chỉ 3 giờ. Góc nhỏ hơn giữa kim giờ và kim phút là bao nhiêu độ?",
+        options: ["60°", "75°", "90°", "120°"],
+        answer: 2
+      },
+      {
+        q: "Từ nào KHÁC nhóm nhất?",
+        options: ["Cam", "Táo", "Cà rốt", "Xoài"],
+        answer: 2
+      },
+      {
+        q: "Nếu 5 con mèo bắt 5 con chuột trong 5 phút, thì 1 con mèo bắt 1 con chuột trong bao lâu?",
+        options: ["1 phút", "5 phút", "10 phút", "25 phút"],
+        answer: 1
+      },
+      {
+        q: "Hình nào hợp quy luật? A, C, F, J, ?",
+        options: ["L", "M", "N", "O"],
+        answer: 3
+      },
+      {
+        q: "Một người có 3 chiếc áo và 2 chiếc quần. Có bao nhiêu cách phối 1 áo với 1 quần?",
+        options: ["5", "6", "8", "9"],
+        answer: 1
+      },
+      {
+        q: "Nếu hôm kia là thứ Hai, thì ngày kia là thứ mấy?",
+        options: ["Thứ Tư", "Thứ Năm", "Thứ Sáu", "Chủ Nhật"],
+        answer: 3
+      },
+      {
+        q: "Số nào không thuộc nhóm? 8, 27, 64, 81, 125",
+        options: ["27", "64", "81", "125"],
+        answer: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+    let selectedAnswers = new Array(questions.length).fill(null);
+    let score = 0;
+    let answered = 0;
+    let timeLeft = 90;
+    let timerInterval = null;
+    let gameEnded = false;
+
+    const startScreen = document.getElementById("startScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const questionCounter = document.getElementById("questionCounter");
+    const timerEl = document.getElementById("timer");
+    const answeredCount = document.getElementById("answeredCount");
+    const timerBox = document.getElementById("timerBox");
+    const questionNumberText = document.getElementById("questionNumberText");
+    const questionText = document.getElementById("questionText");
+    const answersBox = document.getElementById("answersBox");
+    const progressBar = document.getElementById("progressBar");
+    const progressPercent = document.getElementById("progressPercent");
+
+    function startGame() {
+      currentQuestion = 0;
+      selectedAnswers = new Array(questions.length).fill(null);
+      score = 0;
+      answered = 0;
+      timeLeft = 90;
+      gameEnded = false;
+
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      gameScreen.classList.remove("hidden");
+
+      updateTimerUI();
+      renderQuestion();
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerUI();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitGame();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      timerEl.textContent = timeLeft + "s";
+      timerBox.classList.remove("warning", "danger");
+      if (timeLeft <= 30 && timeLeft > 10) {
+        timerBox.classList.add("warning");
+      }
+      if (timeLeft <= 10) {
+        timerBox.classList.add("danger");
+      }
+    }
+
+    function renderQuestion() {
+      if (currentQuestion >= questions.length) {
+        submitGame();
+        return;
+      }
+
+      const item = questions[currentQuestion];
+
+      questionCounter.textContent = `${currentQuestion + 1} / ${questions.length}`;
+      questionNumberText.textContent = `CÂU ${currentQuestion + 1}`;
+      questionText.textContent = item.q;
+      answeredCount.textContent = answered;
+
+      const progress = ((currentQuestion + 1) / questions.length) * 100;
+      progressBar.style.width = progress + "%";
+      progressPercent.textContent = Math.round(progress) + "%";
+
+      answersBox.innerHTML = "";
+
+      item.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.textContent = option;
+        btn.onclick = () => selectAnswer(index, btn);
+        answersBox.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(index, btnEl) {
+      if (gameEnded) return;
+
+      if (selectedAnswers[currentQuestion] === null) {
+        answered++;
+      }
+
+      selectedAnswers[currentQuestion] = index;
+
+      const allButtons = document.querySelectorAll(".answer-btn");
+      allButtons.forEach(btn => btn.classList.remove("selected"));
+      btnEl.classList.add("selected");
+
+      answeredCount.textContent = answered;
+
+      setTimeout(() => {
+        currentQuestion++;
+        renderQuestion();
+      }, 280);
+    }
+
+    function nextQuestion() {
+      if (gameEnded) return;
+      currentQuestion++;
+      renderQuestion();
+    }
+
+    function submitGame() {
+      if (gameEnded) return;
+      gameEnded = true;
+      clearInterval(timerInterval);
+
+      score = 0;
+      for (let i = 0; i < questions.length; i++) {
+        if (selectedAnswers[i] === questions[i].answer) {
+          score++;
+        }
+      }
+
+      gameScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const unanswered = questions.length - answered;
+
+      document.getElementById("scoreMain").textContent = `${score}/10`;
+      document.getElementById("correctResult").textContent = score;
+      document.getElementById("answeredResult").textContent = answered;
+      document.getElementById("unansweredResult").textContent = unanswered;
+
+      const comment = getFunnyComment(score, answered);
+      document.getElementById("commentBox").innerHTML = comment;
+
+      const share = `🧠 Tôi vừa chơi Mini Game IQ 90 Giây!\n✅ Kết quả: ${score}/${answered} câu đúng trên số câu đã trả lời (${questions.length} câu tổng cộng).\n⏱ Thời gian giới hạn: 90 giây.\nBạn dám thử không?`;
+      document.getElementById("shareText").textContent = share;
+    }
+
+    function getFunnyComment(score, answered) {
+      if (answered === 0) {
+        return "Bạn vào game với tinh thần thiền định tuyệt đối: <b>không trả lời câu nào luôn</b>. Bình tĩnh đến mức thời gian cũng phải nể! 😄";
+      }
+
+      if (score <= 2) {
+        return "Não bộ của bạn hôm nay có vẻ đang ở chế độ <b>tiết kiệm pin</b>. Không sao, ai cũng có ngày 'não lag', quan trọng là bạn vẫn dũng cảm bấm chơi! 😆";
+      } else if (score <= 4) {
+        return "Bạn thuộc nhóm <b>thông minh theo kiểu bí ẩn</b>: tiềm năng có thừa, chỉ là 90 giây hơi ngắn để thiên tài kịp bộc lộ thôi! 😉";
+      } else if (score <= 6) {
+        return "Kết quả khá ổn đó! Bạn có tư duy logic tốt, phản xạ cũng nhanh. Nói chung là <b>đầu óc chạy mượt, chỉ thiếu chút turbo</b> nữa thôi! 🔥";
+      } else if (score <= 8) {
+        return "Ồ, ghê đấy! Bạn rõ ràng là người có <b>IQ online rất chiến</b>. Không phải dạng vừa đâu, thuộc nhóm nhìn phát là ngửi thấy quy luật rồi! 😎";
+      } else if (score === 9) {
+        return "Bạn gần như là <b>quái vật IQ hệ dân chơi</b>. Còn thiếu 1 câu nữa là hàng xóm phải gọi bạn bằng 'giáo sư phản xạ' rồi! 🤯";
+      } else {
+        return "10/10 luôn à? Xin chúc mừng! Bạn chính là <b>trùm cuối của làng test não</b>. Máy tính nhìn bạn làm bài chắc cũng phải tự kiểm tra lại chip! 👑🧠";
+      }
+    }
+
+    function restartGame() {
+      startScreen.classList.remove("hidden");
+      gameScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function copyResult() {
+      const text = document.getElementById("shareText").textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Đã sao chép kết quả! Bạn có thể dán lên Facebook ngay.");
+      }).catch(() => {
+        alert("Không sao chép tự động được. Hãy bấm giữ để sao chép thủ công.");
+      });
+    }
+  </script>
+</body>
+</html>
